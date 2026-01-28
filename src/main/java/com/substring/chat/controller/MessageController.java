@@ -47,6 +47,17 @@ public class MessageController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{chatId}")
+    public ResponseEntity<List<MessageResponse>> getMessagesByChatId(
+            @PathVariable String chatId,
+            Authentication authentication) {
+        
+        String userId = authentication.getName();
+        List<MessageResponse> messages = messageService.getAllMessagesInChat(chatId, userId);
+        
+        return ResponseEntity.ok(messages);
+    }
+
     @GetMapping("/chat/{chatId}")
     public ResponseEntity<List<MessageResponse>> getChatMessages(
             @PathVariable String chatId,
