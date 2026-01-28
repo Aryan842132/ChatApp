@@ -5,7 +5,7 @@ FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
 WORKDIR /app
 
 # Copy Maven files
-COPY pom.xml .mvnw .mvn .mvn/
+COPY pom.xml mvnw .mvn .mvn/
 
 # Download dependencies
 RUN mvn dependency:go-offline -B
