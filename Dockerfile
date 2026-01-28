@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy Maven files
 COPY pom.xml mvnw .mvn .mvn/
 
+# Debug: list files
+RUN ls -la
+
 # Download dependencies
 RUN mvn dependency:go-offline -B
 
