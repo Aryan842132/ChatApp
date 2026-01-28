@@ -1,0 +1,21 @@
+{
+  "build": {
+    "builder": "dockerfile",
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "startCommand": "java -jar app.jar",
+    "restartPolicy": "on-failure",
+    "numReplicas": 1
+  },
+  "env": {
+    "PORT": {
+      "value": "8080",
+      "required": true
+    },
+    "SPRING_MONGODB_URI": {
+      "value": "mongodb+srv://username:password@cluster.mongodb.net/database",
+      "required": true
+    }
+  }
+}
