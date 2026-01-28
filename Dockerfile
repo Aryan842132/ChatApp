@@ -9,18 +9,11 @@ COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn/
 
-# Debug: list files
-RUN ls -la
-
 # Download dependencies
 RUN mvn dependency:go-offline -B
 
 # Copy source code
 COPY src src/
-
-# Debug: list all files
-RUN ls -la
-RUN find . -name "*.java" | head -10
 
 # Build the application
 RUN mvn clean package -DskipTests -B
