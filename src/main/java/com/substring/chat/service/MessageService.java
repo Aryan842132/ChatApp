@@ -14,6 +14,7 @@ import com.substring.chat.dto.MessageResponse;
 import com.substring.chat.model.Chat;
 import com.substring.chat.model.Message;
 import com.substring.chat.repository.MessageRepository;
+import com.substring.chat.service.SocketIoService;
 
 @Service
 public class MessageService {
@@ -23,6 +24,9 @@ public class MessageService {
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private SocketIoService socketIoService;
 
     public Message sendMessage(String senderId, MessageRequest request) {
         
@@ -36,7 +40,15 @@ public class MessageService {
         message.setTimestamp(LocalDateTime.now());
         message.setStatus(Message.MessageStatus.SENT);
 
-        return messageRepository.save(message);
+        Message savedMessage = messageRepository.save(message);
+        
+        // Emit the message to the recipient via Socket.IO
+        socketIoService.emitMessageToUser(request.getReceiverId(), savedMessage);
+        
+        // Also emit to the sender for confirmation
+        socketIoService.emitMessageToUser(senderId, savedMessage);
+        
+        return savedMessage;
     }
 
     public List<MessageResponse> getChatHistory(String chatId, String userId, int page, int size) {

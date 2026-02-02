@@ -29,8 +29,6 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
     
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/send")
     public ResponseEntity<MessageResponse> sendMessage(
@@ -40,9 +38,6 @@ public class MessageController {
         String senderId = authentication.getName();
         Message message = messageService.sendMessage(senderId, request);
         MessageResponse response = MessageResponse.fromMessage(message);
-        
-        // Publish message to WebSocket for real-time delivery
-        messagingTemplate.convertAndSend("/topic/chat/" + message.getChatId(), response);
         
         return ResponseEntity.ok(response);
     }
