@@ -6,17 +6,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.substring.chat.dto.ChatResponse;
 import com.substring.chat.model.Chat;
+import com.substring.chat.model.Message;
 import com.substring.chat.repository.ChatRepository;
+import com.substring.chat.repository.MessageRepository;
 
 @Service
 public class ChatService {
 
     @Autowired
     private ChatRepository chatRepository;
+
+    @Autowired
+    private MessageRepository messageRepository;
 
     public Chat createOrGetChat(String user1Id, String user2Id) {
         List<Chat> existingChats = chatRepository.findByParticipantsWithAll(Arrays.asList(user1Id, user2Id));
@@ -42,8 +48,26 @@ public class ChatService {
         List<Chat> chats = chatRepository.findByParticipantsContaining(userId);
         
         return chats.stream()
-                .map(ChatResponse::fromChat)
+                .map(this::toChatResponseWithLastMessage)
                 .collect(Collectors.toList());
+    }
+
+    private ChatResponse toChatResponseWithLastMessage(Chat chat) {
+        ChatResponse response = ChatResponse.fromChat(chat);
+        
+        // Fetch the last message for this chat
+        List<Message> lastMessages = messageRepository.findByChatIdOrderByTimestampAsc(
+            chat.getChatId(), 
+            PageRequest.of(0, 1)
+        );
+        
+        if (!lastMessages.isEmpty()) {
+            Message lastMessage = lastMessages.get(0);
+            response.setLastMessage(lastMessage.getContent());
+            response.setLastMessageTime(lastMessage.getTimestamp());
+        }
+        
+        return response;
     }
 
     public Chat getChatById(String chatId) {

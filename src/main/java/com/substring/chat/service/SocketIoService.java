@@ -18,7 +18,7 @@ public class SocketIoService {
             String clientId = (String) client.get("userId");
             if (userId != null && userId.equals(clientId)) {
                 client.sendEvent("receive_message", message);
-                break; // Assuming one client per user
+                break;
             }
         }
     }
@@ -28,7 +28,5 @@ public class SocketIoService {
     }
 
     public void emitToSpecificClient(String sessionId, String eventName, Object data) {
-        // This method is not used in current implementation
-        // Socket.IO clients are identified by UUID, not String session IDs
     }
 }
